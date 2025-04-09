@@ -1,1 +1,279 @@
 /* You can add global styles to this file, and also import other style files */
+/* src/styles/variables.css */
+:root {
+    /* Colores */
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+  
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 3rem;
+  
+    /* Tipografía */
+    --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.25rem;
+    --font-weight-normal: 400;
+    --font-weight-bold: 700;
+  
+    /* Bordes */
+    --border-radius: 0.25rem;
+    --border-width: 1px;
+    --border-color: #dee2e6;
+  
+    /* Sombras */
+    --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+    /* Breakpoints */
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+  }
+
+  /* src/styles/variables.css */
+:root {
+    /* Colores */
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+  
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 3rem;
+  
+    /* Tipografía */
+    --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.25rem;
+    --font-weight-normal: 400;
+    --font-weight-bold: 700;
+  
+    /* Bordes */
+    --border-radius: 0.25rem;
+    --border-width: 1px;
+    --border-color: #dee2e6;
+  
+    /* Sombras */
+    --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+    /* Breakpoints */
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+  }
+  
+  /* src/styles/global.css */
+:root {
+    /* Variables de color */
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+  
+    /* Espaciado */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 3rem;
+  
+    /* Tipografía */
+    --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.25rem;
+    --font-weight-normal: 400;
+    --font-weight-bold: 700;
+  
+    /* Bordes */
+    --border-radius: 0.25rem;
+    --border-width: 1px;
+    --border-color: #dee2e6;
+  
+    /* Sombras */
+    --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+    /* Breakpoints */
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+  }
+  
+  /* Estilos base */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html, body {
+    height: 100%;
+  }
+  
+  body {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--dark-color);
+    background-color: var(--light-color);
+  }
+  
+  /* Contenedores */
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+  }
+  
+  /* Tipografía */
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: var(--spacing-md);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+  }
+  
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1rem; }
+  
+  p {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Formularios */
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -var(--spacing-sm);
+    margin-left: -var(--spacing-sm);
+  }
+  
+  .form-group {
+    flex: 1 0 0%;
+    padding-right: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
+  }
+  
+  label {
+    display: inline-block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: var(--font-weight-bold);
+  }
+  
+  .form-control {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--dark-color);
+    background-color: #fff;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+  
+  .form-control:focus {
+    border-color: #0056b3; /* Simula lighten($primary-color, 25%) */
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Simula lighten($primary-color, 25%) */
+  }
+  
+  .form-control.is-invalid {
+    border-color: var(--danger-color);
+  }
+  
+  .invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-sm);
+    color: var(--danger-color);
+  }
+  
+  /* Botones */
+  .btn {
+    display: inline-block;
+    font-weight: var(--font-weight-normal);
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: var(--border-width) solid transparent;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    border-radius: var(--border-radius);
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    cursor: pointer;
+  }
+  
+  .btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Simula el efecto focus */
+  }
+  
+  .btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  
+  .btn-primary {
+    color: #fff;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: #0056b3; /* Simula darken($primary-color, 7.5%) */
+    border-color: #004085; /* Simula darken($primary-color, 10%) */
+  }
+  
+  /* Y más estilos de los botones y otros componentes siguen el mismo patrón */
+  

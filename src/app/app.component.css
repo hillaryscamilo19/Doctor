@@ -1,0 +1,60 @@
+/* src/app/app.component.css */
+:root {
+    --dark-color: #acafb38c;
+    --light-color: #f8f9fa;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --border-radius: 0.25rem;
+    --box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --font-size-sm: 0.875rem;
+  }
+  
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .app-header {
+    background-color:rgba(234, 231, 231, 1);
+    color: rgb(0, 0, 0);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--box-shadow-sm);
+  }
+  
+  .app-header .logo h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .app-header .main-nav a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s;
+  }
+  
+  .app-header .main-nav a:hover,
+  .app-header .main-nav a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .app-content {
+    flex: 1;
+    background-color: var(--light-color);
+    padding: var(--spacing-md);
+  }
+  
+  .app-footer {
+    background-color: rgba(234, 231, 231, 1);
+    color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    padding: var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
