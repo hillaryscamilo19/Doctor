@@ -1,1 +1,120 @@
-<p>doctor-detail works!</p>
+<div class="container">
+    <h2>Detalles del Doctor</h2>
+    
+    <div *ngIf="loading" class="loading">
+      Cargando...
+    </div>
+    
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <div *ngIf="!loading && doctor" class="doctor-detail">
+      <div class="doctor-info">
+        <h3>{{ doctor.nombre }}</h3>
+        <p><strong>ID:</strong> {{ doctor.id }}</p>
+        <p><strong>Estatus:</strong> {{ doctor.estatus }}</p>
+        
+        <div class="schedule-info">
+          <h4>Horario de Consultas</h4>
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th>Día</th>
+                <th>Disponible</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Domingo</td>
+                <td>{{ doctor.consultaDom ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConDom || '-' }}</td>
+                <td>{{ doctor.horFinConDom || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Lunes</td>
+                <td>{{ doctor.consultaLun ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConLun || '-' }}</td>
+                <td>{{ doctor.horFinConLun || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Martes</td>
+                <td>{{ doctor.consultaMar ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConMar || '-' }}</td>
+                <td>{{ doctor.horFinConMar || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Miércoles</td>
+                <td>{{ doctor.consultaMie ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConMie || '-' }}</td>
+                <td>{{ doctor.horFinConMie || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Jueves</td>
+                <td>{{ doctor.consultaJue ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConJue || '-' }}</td>
+                <td>{{ doctor.horFinConJue || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Viernes</td>
+                <td>{{ doctor.consultaVie ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConVie || '-' }}</td>
+                <td>{{ doctor.horFinConVie || '-' }}</td>
+              </tr>
+              <tr>
+                <td>Sábado</td>
+                <td>{{ doctor.consultaSab ? 'Sí' : 'No' }}</td>
+                <td>{{ doctor.horIniConSab || '-' }}</td>
+                <td>{{ doctor.horFinConSab || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="appointments-section">
+        <h4>Citas Programadas</h4>
+        
+        <div *ngIf="appointments.length === 0" class="no-data">
+          No hay citas programadas para este doctor.
+        </div>
+        
+        <div *ngIf="appointments.length > 0" class="appointments-list">
+          <div *ngFor="let appointment of appointments" class="appointment-card" [ngClass]="{'completed': appointment.completada, 'cancelled': appointment.estado === 'CANCELADA'}">
+            <div class="appointment-header">
+              <span class="appointment-date">
+                {{ getDayName(appointment.fecha) }}, {{ formatDate(appointment.fecha) }}
+              </span>
+              <span class="appointment-time">
+                {{ appointment.horaInicio }} - {{ appointment.horaFin }}
+              </span>
+              <span class="appointment-status" [ngClass]="{'completed': appointment.completada, 'cancelled': appointment.estado === 'CANCELADA', 'scheduled': appointment.estado === 'PROGRAMADA'}">
+                {{ appointment.estado }}
+              </span>
+            </div>
+            
+            <div class="appointment-patient">
+              <p><strong>Paciente:</strong> {{ appointment.patient?.nombre }} {{ appointment.patient?.apellidos }}</p>
+            </div>
+            
+            <div class="appointment-actions" *ngIf="appointment.estado === 'PROGRAMADA'">
+              <button (click)="completeAppointment(appointment.id)" class="btn-complete">
+                Completar
+              </button>
+              <button (click)="cancelAppointment(appointment.id)" class="btn-cancel">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="back-link">
+        <a routerLink="/doctors" class="btn-back">Volver a la lista de doctores</a>
+      </div>
+    </div>
+  </div>
+  
+  

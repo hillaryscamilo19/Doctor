@@ -1,11 +1,12 @@
 <!-- src/app/app.component.html -->
 <div class="app-container">
   <header class="app-header">
+
     <div class="logo">
-      <h1>{{ title }}</h1>
+      <h1>    <fa-icon [icon]="faUsersCog"></fa-icon> {{ title }}</h1>
     </div>
     <nav class="main-nav">
-      <a routerLink="/doctors" routerLinkActive="active">Doctores</a>
+      <fa-icon [icon]="faUserMd"></fa-icon><a routerLink="/doctors" routerLinkActive="active">Doctores</a>
     </nav>
   </header>
   

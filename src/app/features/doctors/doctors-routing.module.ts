@@ -1,4 +1,3 @@
-// src/app/features/doctors/doctors-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DoctorDetailComponent } from '../../shared/components/doctor-detail/doctor-detail/doctor-detail.component';
@@ -13,4 +12,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class DoctorsRoutingModule { }
+export class DoctorsRoutingModule {}
