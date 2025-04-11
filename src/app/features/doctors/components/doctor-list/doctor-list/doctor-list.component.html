@@ -21,12 +21,12 @@
       {{ error }}
     </div>
     
-    <div *ngIf="!loading && doctor.length === 0" class="no-data">
+    <div *ngIf="loading && doctors.length === 0" class="no-data">
       No hay doctores disponibles.
     </div>
     
-    <div *ngIf="!loading && doctor.length > 0" class="doctor-grid">
-      <div *ngFor="let doctor of doctor" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
+    <div *ngIf="!loading && doctors.length > 0" class="doctor-grid">
+      <div *ngFor="let doctor of doctors" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
         <div class="doctor-header">
           <h3>{{ doctor.nombre }}</h3>
           <span class="status-badge" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">

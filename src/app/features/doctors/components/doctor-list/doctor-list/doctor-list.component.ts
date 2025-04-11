@@ -1,80 +1,71 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { DoctorService } from '../../../../../core/services/doctor/doctor.service';
-import { Doctor } from '../../../../../core/models/doctor.model';
-import { finalize } from 'rxjs';
+import { Component, type OnInit } from "@angular/core"
+import { finalize } from "rxjs"
+import { Doctor } from "../../../../../core/models/doctor.model"
+import { DoctorService } from "../../../../../core/services/doctor/doctor.service"
+import { CommonModule } from "@angular/common"
+import { FormsModule } from "@angular/forms"
 
 @Component({
-  selector: 'app-doctor-list',
+  selector: "app-doctor-list",
+  templateUrl: "./doctor-list.component.html",
   imports: [FormsModule, CommonModule],
-  standalone: true,
-  templateUrl: './doctor-list.component.html',
-  styleUrl: './doctor-list.component.css'
+  styleUrls: ["./doctor-list.component.css"],
 })
-export class DoctorListComponent {
-  doctor: Doctor[] = [];
-  loading = false;
-  error = '';
-  selectedDate = new Date().toDateString().split('T')[0];
+export class DoctorListComponent implements OnInit {
+  doctors: Doctor[] = []
+  loading = true
+  error: string | null = null
+  selectedDate: string = new Date().toISOString().split("T")[0] // Fecha actual en formato YYYY-MM-DD
 
-  constructor(private doctorServices: DoctorService) {
-  }
+  constructor(private doctorServices: DoctorService) {}
 
   ngOnInit(): void {
-
-    this.loadDoctors();
+    this.loadDoctors()
   }
 
+  onDateChange(): void {
+    this.loadDoctors()
+  }
 
   loadDoctors(): void {
-    this.error = '';
-    this.loading = true;
-
-    this.doctorServices.getDoctors()
-      .pipe(finalize(() => this.loading = false))
+    this.error = ""
+    this.loading = true 
+    this.doctorServices
+      .getDoctors()
+      .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data) => {
-          this.doctor = data
-          this.checkAvailability();
+          this.doctors = data 
+          this.checkAvailability()
         },
         error: (err) => {
-          this.error = 'Error al cargar Los doctores:' + err.message;
-          console.log(err);
-
-        }
-      });
+          this.error = "Error al cargar Los doctores:" + err.message
+          console.log(err)
+      },
+    })
   }
 
   checkAvailability(): void {
-    this.doctor.forEach(doctor => {
+    this.doctors.forEach((doctor) => {
+      // Usar 'doctors' en lugar de 'doctor'
       this.doctorServices.checkAvailability(doctor.id, this.selectedDate).subscribe({
         next: (result) => {
-          doctor.isAvailable = result.available;
-          doctor.nextAvailability = result.nextAvailability;
+          doctor.isAvailable = result.available
+          doctor.nextAvailability = result.nextAvailability
         },
         error: (err) => {
-          console.log(`Error al verificar disponibilidad del doctor ${doctor.id}:`, err);
-        }
+          console.log(`Error al verificar disponibilidad del doctor ${doctor.id}:`, err)
+        },
       })
     })
   }
 
-  onDateChange(): void {
-    this.checkAvailability();
-  }
-
   getDayName(date: Date): string {
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    return days[new Date(date).getDay()];
+    const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    return days[date.getDay()]
   }
 
   formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
   }
-
 }
