@@ -1,62 +1,51 @@
 <div class="container">
-    <h2>Lista de Doctores</h2>
-    
-    <div class="date-selector">
-      <label for="date">Seleccionar fecha:</label>
-      <input 
-        type="date" 
-        id="date" 
-        [(ngModel)]="selectedDate" 
-        (change)="onDateChange()"
-        class="form-control"
-      >
-    </div>
-    
-    <div *ngIf="loading" class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Cargando doctores...</p>
-    </div>
-    
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
-    </div>
-    
-    <div *ngIf="loading && doctors.length === 0" class="no-data">
-      No hay doctores disponibles.
-    </div>
-    
-    <div *ngIf="!loading && doctors.length > 0" class="doctor-grid">
-      <div *ngFor="let doctor of doctors" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
-        <div class="doctor-header">
-          <h3>{{ doctor.nombre }}</h3>
-          <span class="status-badge" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
-            {{ doctor.isAvailable ? 'Disponible' : 'No disponible' }}
-          </span>
-        </div>
-        
-        <div class="doctor-info">
-          <p><strong>ID:</strong> {{ doctor.id }}</p>
-          <p><strong>Estatus:</strong> {{ doctor.estatus }}</p>
-        </div>
-        
-        <div *ngIf="!doctor.isAvailable && doctor.nextAvailability" class="next-availability">
-          <p><strong>Próxima disponibilidad:</strong></p>
-          <p>{{ getDayName(doctor.nextAvailability.nextDate) }}, {{ formatDate(doctor.nextAvailability.nextDate) }}</p>
-          <p>Horario: {{ doctor.nextAvailability.startTime }} - {{ doctor.nextAvailability.endTime }}</p>
-        </div>
-        
-        <div class="doctor-actions">
-          <button 
-            routerLink="['/appointments/assign', doctor.id]" 
-            [disabled]="!doctor.isAvailable"
-            class="btn btn-primary"
-          >
-            Asignar Paciente
-          </button>
-          <button routerLink="['/doctors', doctor.id]" class="btn btn-secondary">
-            Ver Detalles
-          </button>
-        </div>
+  <h2>Lista de Doctores</h2>
+  
+  <div class="date-selector">
+    <label for="date">Seleccionar fecha:</label>
+    <input 
+      type="date" 
+      id="date" 
+      [(ngModel)]="selectedDate" 
+      (change)="onDateChange()"
+      class="form-control"
+    >
+  </div>
+  
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando doctores...</p>
+  </div>
+  
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <div *ngIf="!loading && doctors && doctors.length === 0" class="no-data">
+    No hay doctores disponibles.
+  </div>
+  
+  <div *ngIf="!loading && doctors && doctors.length > 0" class="doctor-grid">
+    <div *ngFor="let doctor of doctors" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
+      <div class="doctor-header">
+        <h3>{{ doctor.doct_Nombre }}</h3>
+        <span class="status-badge" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
+          {{ doctor.isAvailable ? 'Disponible' : 'No disponible' }}
+        </span>
       </div>
+      
+      <div class="doctor-info">
+        <p><strong>ID:</strong> {{ doctor.doct_IdDoctor }}</p>
+        <p><strong>Estatus:</strong> {{ doctor.doct_Estatus }}</p>
+      </div>
+      
+      <div *ngIf="!doctor.isAvailable && doctor.nextAvailability" class="next-availability">
+        <p><strong>Próxima disponibilidad:</strong></p>
+        <p>{{ getDayName(doctor.nextAvailability.nextDate) }}, {{ formatDate(doctor.nextAvailability.nextDate) }}</p>
+        <p>Horario: {{ doctor.nextAvailability.startTime }} - {{ doctor.nextAvailability.endTime }}</p>
+      </div>
+      
+
     </div>
   </div>
+</div>

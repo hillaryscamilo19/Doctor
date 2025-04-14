@@ -47,13 +47,13 @@ export class DoctorListComponent {
 
   checkAvailability(): void{
     this.doctor.forEach(doctor => {
-      this.doctorServices.checkAvailability(doctor.id, this.selectedDate).subscribe({
+      this.doctorServices.checkAvailability(doctor.doct_IdDoctor, this.selectedDate).subscribe({
         next:  (result) => {
           doctor.isAvailable = result.available;
           doctor.nextAvailability = result.nextAvailability;
         },
         error: (err) => {
-          console.log(`Error al verificar disponibilidad del doctor ${doctor.id}:`, err);
+          console.log(`Error al verificar disponibilidad del doctor ${doctor.doct_IdDoctor}:`, err);
         }
       })
     })

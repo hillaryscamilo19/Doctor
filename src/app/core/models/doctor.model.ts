@@ -1,30 +1,30 @@
 export interface Doctor {
-        id: string
-        nombre: string
-        estatus: string
-        consultaDom: boolean
-        consultaLun: boolean
-        consultaMar: boolean
-        consultaMie: boolean
-        consultaJue: boolean
-        consultaVie: boolean
-        consultaSab: boolean
+        doct_IdDoctor: string
+        doct_Nombre: string
+        doct_Estatus: string
+        doct_ConsultaDom: boolean
+        doct_ConsultaLun: boolean
+        doct_ConsultaMar: boolean
+        doct_ConsultaMie: boolean
+        doct_ConsultaJue: boolean
+        doct_ConsultaVie: boolean
+        doct_ConsultaSab: boolean
       
-        horIniConDom?: string
-        horIniConLun?: string
-        horIniConMar?: string
-        horIniConMie?: string
-        horIniConJue?: string
-        horIniConVie?: string
-        horIniConSab?: string
+        doct_HorIniConDom?: string
+        doct_HorIniConLun?: string
+        doct_HorIniConMar?: string
+        doct_HorIniConMie?: string
+        doct_HorIniConJue?: string
+        doct_HorIniConVie?: string
+        doct_HorIniConSab?: string
       
-        horFinConDom?: string
-        horFinConLun?: string
-        horFinConMar?: string
-        horFinConMie?: string
-        horFinConJue?: string
+        doct_HorFinConDom?: string
+        doct_HorFinConLun?: string
+        doct_HorFinConMar?: string
+        doct_HorFinConMie?: string
+        doct_HorFinConJue?: string
         horFinConVie?: string
-        horFinConSab?: string
+        doct_HorFinConSab?: string
       
         isAvailable?: boolean
         nextAvailability?: {
