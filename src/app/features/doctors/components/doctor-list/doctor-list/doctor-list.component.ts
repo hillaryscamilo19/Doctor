@@ -2,13 +2,13 @@ import { Component, type OnInit } from "@angular/core"
 import { finalize } from "rxjs"
 import { Doctor } from "../../../../../core/models/doctor.model"
 import { DoctorService } from "../../../../../core/services/doctor/doctor.service"
-import { CommonModule } from "@angular/common"
+import { CommonModule, NgIf } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 
 @Component({
   selector: "app-doctor-list",
   templateUrl: "./doctor-list.component.html",
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NgIf],
   styleUrls: ["./doctor-list.component.css"],
 })
 export class DoctorListComponent implements OnInit {
