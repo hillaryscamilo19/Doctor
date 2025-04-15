@@ -21,9 +21,11 @@ export class DoctorService {
 
 
   checkAvailability(doctorId: string, date: string): Observable<{ available: boolean; nextAvailability?: any }> {
+    const encodedId = encodeURIComponent(doctorId); // ✅ Escapa el ID para URLs
     return this.apiService.get<{ available: boolean; nextAvailability?: any }>(
-      `doctors/${doctorId}/availability`, 
+      `doctors/${encodedId}/availability`,
       { date }
     );
   }
+  
 }

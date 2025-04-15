@@ -12,7 +12,7 @@
     >
   </div>
   
-  <div *ngIf="loading" class="loading-spinner">
+  <div *ngIf="!loading" class="loading-spinner">
     <div class="spinner"></div>
     <p>Cargando doctores...</p>
   </div>
@@ -21,12 +21,13 @@
     {{ error }}
   </div>
   
-  <div *ngIf="!loading && doctors && doctors.length === 0" class="no-data">
+  <div *ngIf="!loading && doctors?.length === 0" class="no-data">
     No hay doctores disponibles.
   </div>
   
-  <div *ngIf="!loading && doctors && doctors.length > 0" class="doctor-grid">
-    <div *ngFor="let doctor of doctors" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
+  <div *ngIf="!loading && doctors?.length > 0" class="doctor-grid">
+
+    <div *ngFor="let doctors of doctors" class="doctor-card" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
       <div class="doctor-header">
         <h3>{{ doctor.doct_Nombre }}</h3>
         <span class="status-badge" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
@@ -39,13 +40,11 @@
         <p><strong>Estatus:</strong> {{ doctor.doct_Estatus }}</p>
       </div>
       
-      <div *ngIf="!doctor.isAvailable && doctor.nextAvailability" class="next-availability">
+      <div *ngIf="doctor.isAvailable && doctor.nextAvailability" class="next-availability">
         <p><strong>Próxima disponibilidad:</strong></p>
         <p>{{ getDayName(doctor.nextAvailability.nextDate) }}, {{ formatDate(doctor.nextAvailability.nextDate) }}</p>
         <p>Horario: {{ doctor.nextAvailability.startTime }} - {{ doctor.nextAvailability.endTime }}</p>
       </div>
-      
-
     </div>
   </div>
 </div>

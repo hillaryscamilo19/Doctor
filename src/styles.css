@@ -1,5 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 /* src/styles/variables.css */
+/* Tailwind CSS */
+/* Bootstrap */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+
 :root {
     /* Colores */
     --primary-color: #007bff;
@@ -146,14 +151,7 @@
     color: var(--dark-color);
     background-color: var(--light-color);
   }
-  
-  /* Contenedores */
-  .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing-md);
-  }
+
   
   /* Tipografía */
   h1, h2, h3, h4, h5, h6 {

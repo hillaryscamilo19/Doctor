@@ -12,14 +12,15 @@ import { FormsModule } from "@angular/forms"
   styleUrls: ["./doctor-list.component.css"],
 })
 export class DoctorListComponent implements OnInit {
-  doctors: Doctor[] | null = null; // Inicializar como null para controlar mejor
+  doctors?: Doctor [];
   loading = true;
-  error: string | null = null;
+  error?: string | null = null;
   selectedDate: string = new Date().toISOString().split("T")[0];
 
-  constructor(private doctorServices: DoctorService) {}
+  constructor(private doctorServices: DoctorService) { }
 
   ngOnInit(): void {
+    console.log(this.doctors);
     this.loadDoctors();
   }
 
@@ -30,8 +31,7 @@ export class DoctorListComponent implements OnInit {
   loadDoctors(): void {
     this.error = "";
     this.loading = true;
-    this.doctors = []; // Asegúrate de que doctors sea un array vacío mientras carga
-    
+    this.doctors;
     this.doctorServices
       .getDoctors()
       .pipe(finalize(() => (this.loading = false)))
@@ -48,20 +48,28 @@ export class DoctorListComponent implements OnInit {
   }
 
   checkAvailability(): void {
-    if (!this.doctors) return; // Verificación adicional
-    
-    this.doctors.forEach((doctor) => {
+    if (this.doctors?.length === 0) return;
+    this.doctors?.forEach((doctor) => {
       this.doctorServices.checkAvailability(doctor.doct_IdDoctor, this.selectedDate).subscribe({
         next: (result) => {
           doctor.isAvailable = result.available;
           doctor.nextAvailability = result.nextAvailability;
         },
         error: (err) => {
-          console.log(`Error al verificar disponibilidad del doctor ${doctor.doct_IdDoctor}:`, err);
+          console.error(`Error al verificar disponibilidad del doctor ${doctor.doct_IdDoctor}:`, err);
         },
       });
     });
   }
+
+  nextAvailability?: {
+    nextDate: Date;
+    startTime: string;
+    endTime: string;
+  };
+
+
+
 
   getDayName(date: Date): string {
     const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -71,4 +79,6 @@ export class DoctorListComponent implements OnInit {
   formatDate(date: Date): string {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
   }
+
+
 }
