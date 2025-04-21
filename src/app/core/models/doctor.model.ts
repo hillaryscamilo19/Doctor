@@ -1,5 +1,5 @@
 export interface Doctor {
-        doct_IdDoctor: string
+        doct_IdDoctor:  string
         doct_Nombre: string
         doct_Estatus: string
         doct_ConsultaDom: boolean
@@ -27,7 +27,7 @@ export interface Doctor {
         doct_HorFinConSab?: string
       
         isAvailable?: boolean
-        nextAvailability?: {
+        nextAvailability: {
           nextDate: Date
           startTime: string
           endTime: string

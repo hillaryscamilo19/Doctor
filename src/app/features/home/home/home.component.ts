@@ -15,7 +15,6 @@ interface PatientWithDoctor extends Patient {
   sintoma?: string;
   doctorAsignado?: Doctor;
 }
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -29,7 +28,7 @@ export class HomeComponent implements OnInit {
   showAssignmentModal = false;
   patientsWithDoctors: PatientWithDoctor[] = [];
   doctors: Doctor[] = [];
-  selectedDate: string = new Date().toISOString().split('T')[0]; // Today's date in YYYY-MM-DD format
+  selectedDate: string = new Date().toISOString().split('T')[0];
   selectedPatientId: string = '';
   selectedDoctorId: string = '';
   selectedPatient: PatientWithDoctor | null = null;
@@ -61,7 +60,7 @@ export class HomeComponent implements OnInit {
     ).subscribe(({ patients, doctors }) => {
       this.patientsWithDoctors = patients.map(patient => ({
         ...patient,
-        sintoma: this.getMockSymptom()
+        sintoma: patient.expe_Observacion
       }));
       this.doctors = doctors;
       this.checkDoctorsAvailability();
@@ -69,41 +68,24 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  private getMockSymptom(): string {
-    const symptoms = [
-      'Dolor de cabeza',
-      'Fiebre',
-      'Dolor abdominal',
-      'Tos',
-      'Dolor muscular',
-      'Fatiga',
-      'Presión arterial alta',
-      'Mareos',
-      'Dificultad respiratoria'
-    ];
-    return symptoms[Math.floor(Math.random() * symptoms.length)];
-  }
-
   checkDoctorsAvailability(): void {
-    this.doctors.forEach(doctor => {
+    const availabilityRequests = this.doctors.map(doctor =>
       this.doctorService.checkAvailability(doctor.doct_IdDoctor, this.selectedDate)
-        .subscribe(result => {
-          doctor.isAvailable = result.available;
-          doctor.nextAvailability = result.nextAvailability;
-        });
-    });
+        .pipe(
+          catchError(() => {
+            // Devuelve algo por defecto si falla
+            return [{ available: false, nextAvailability: null }];
+          })
+        )
+    );
   }
-
 
   loadCurrentAppointments(): void {
-
     this.appointmentService.getAppointmentsByDate(this.selectedDate)
       .subscribe(appointments => {
-  
         appointments.forEach(appointment => {
-          const patient = this.patientsWithDoctors.find(p => p.id === appointment.pacienteId);
-          const doctor = this.doctors.find(d => d.doct_IdDoctor === appointment.doctorId);
-
+          const patient = this.patientsWithDoctors.find(p => p.expe_NumeroExpediente === appointment.expe_NumeroExpediente);
+          const doctor = this.doctors.find(d => d.doct_IdDoctor === appointment.expe_NumeroExpediente);
           if (patient && doctor) {
             patient.doctorAsignado = doctor;
           }
@@ -111,14 +93,21 @@ export class HomeComponent implements OnInit {
       });
   }
 
-
   setActiveTab(tab: 'patients' | 'doctors'): void {
     this.activeTab = tab;
   }
 
+ onDateChange(): void {
+  this.checkDoctorsAvailability();   
+  this.loadCurrentAppointments();   
+}
 
-  onDateChange(): void {
-    this.loadData();
+  trackByPatient(index: number, patient: PatientWithDoctor) {
+    return patient.expe_NumeroExpediente;
+  }
+
+  trackByDoctor(index: number, doctor: Doctor) {
+    return doctor.doct_IdDoctor;
   }
 
 
@@ -133,18 +122,18 @@ export class HomeComponent implements OnInit {
 
 
   removeAssignment(patient: PatientWithDoctor): void {
-  
-    this.appointmentService.deleteAppointmentByPatientId(patient.id).subscribe(() => {
+
+    this.appointmentService.deleteAppointmentByPatientId(patient.expe_NumeroExpediente).subscribe(() => {
       patient.doctorAsignado = undefined;
     });
   }
 
 
   assignAutomatically(patient: PatientWithDoctor): void {
-    const availableDoctor = this.availableDoctors[0]; 
+    const availableDoctor = this.availableDoctors[0];
 
     if (availableDoctor) {
-      this.createAppointment(patient.id, availableDoctor.doct_IdDoctor);
+      this.createAppointment(patient.expe_NumeroExpediente, availableDoctor.doct_IdDoctor);
     } else {
       this.error = 'No hay doctores disponibles en este momento.';
     }
@@ -152,7 +141,7 @@ export class HomeComponent implements OnInit {
 
   assignManually(patient: PatientWithDoctor): void {
     this.selectedPatient = patient;
-    this.selectedPatientId = patient.id.toString();
+    this.selectedPatientId = patient.expe_NumeroExpediente.toString();
     this.selectedDoctorId = '';
     this.showAssignmentModal = true;
   }
@@ -188,9 +177,9 @@ export class HomeComponent implements OnInit {
     const doctor = this.doctors.find(d => d.doct_IdDoctor === doctorId);
     if (!doctor) return;
 
-   
+
     const date = new Date(this.selectedDate);
-    const dayOfWeek = date.getDay(); 
+    const dayOfWeek = date.getDay();
 
     let startTime = '';
     let endTime = '';
@@ -235,7 +224,7 @@ export class HomeComponent implements OnInit {
     };
     this.appointmentService.createAppointment(appointmentData).subscribe(
       () => {
-        const patient = this.patientsWithDoctors.find(p => p.id === patientId);
+        const patient = this.patientsWithDoctors.find(p => p.expe_NumeroExpediente === patientId);
         const doctor = this.doctors.find(d => d.doct_IdDoctor === doctorId);
 
         if (patient && doctor) {

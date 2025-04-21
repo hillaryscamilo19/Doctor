@@ -1,130 +1,129 @@
-<div class="container">    
-    <!-- Selector de fecha -->
-    <div class="date-selector">
-      <label for="date">Seleccionar fecha:</label>
-      <input type="date" id="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="form-control">
+<div class="container">
+  <!-- Selector de fecha -->
+  <div class="date-selector">
+    <label for="date">Seleccionar fecha:</label>
+    <input type="date" id="date" [(ngModel)]="selectedDate" (change)="onDateChange()" class="form-control">
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <div class="tab" [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Pacientes</div>
+    <div class="tab" [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctores</div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Patient Cards -->
+  <div class="card-grid" *ngIf="activeTab === 'patients' && !loading">
+    <div *ngIf="patientsWithDoctors.length === 0" class="no-data">
+      No hay pacientes disponibles.
     </div>
-    
-    <!-- Tabs -->
-    <div class="tabs-container">
-      <div class="tab" [class.active]="activeTab === 'patients'" (click)="setActiveTab('patients')">Pacientes</div>
-      <div class="tab" [class.active]="activeTab === 'doctors'" (click)="setActiveTab('doctors')">Doctores</div>
-    </div>
-    
-    <!-- Loading state -->
-    <div *ngIf="loading" class="loading-spinner">
-      <div class="spinner"></div>
-      <p>Cargando datos...</p>
-    </div>
-    
-    <!-- Error state -->
-    <div *ngIf="error" class="alert alert-danger">
-      {{ error }}
-    </div>
-    
-    <!-- Patient Cards -->
-    <div class="card-grid" *ngIf="activeTab === 'patients' && !loading">
-      <div *ngIf="patientsWithDoctors.length === 0" class="no-data">
-        No hay pacientes disponibles.
+
+    <div class="patient-card" *ngFor="let patient of patientsWithDoctors">
+      <h3>{{ patient.expe_NombreMadre }}</h3>
+      <h3>{{ patient.expe_Apellidos }}</h3>
+      <h3>{{ patient.expe_Cedula }}</h3>
+      <h3>{{ patient.expe_Email }}</h3>
+      <p class="symptom">{{ patient.sintoma }}</p>
+
+      <div class="doctor-assignment" *ngIf="patient.doctorAsignado">
+        <div class="assigned-doctor">
+          <span class="doctor-icon"><i class="bi bi-person"></i></span>
+          <span>{{ patient.doctorAsignado.nombre }}</span>
+          <button class="remove-btn" (click)="removeAssignment(patient)">×</button>
+        </div>
+        <div class="specialty-tag">{{ patient.doctorAsignado.especialidad }}</div>
       </div>
-      
-      <div class="patient-card" *ngFor="let patient of patientsWithDoctors">
-        <h3>{{ patient.nombre }}</h3>
-        <p class="symptom">{{ patient.sintoma }}</p>
-        
-        <div class="doctor-assignment" *ngIf="patient.doctorAsignado">
-          <div class="assigned-doctor">
-            <span class="doctor-icon"><i class="bi bi-person"></i></span>
-            <span>{{ patient.doctorAsignado.nombre }}</span>
-            <button class="remove-btn" (click)="removeAssignment(patient)">×</button>
-          </div>
-          <div class="specialty-tag">{{ patient.doctorAsignado.especialidad }}</div>
-        </div>
-        
-        <div class="action-buttons" *ngIf="!patient.doctorAsignado">
-          <button class="btn btn-auto-assign" (click)="assignAutomatically(patient)">
-            <i class="bi bi-lightning"></i> Asignar Automáticamente
-          </button>
-          <button class="btn btn-manual-assign" (click)="assignManually(patient)">
-            <i class="bi bi-person"></i> Asignar Manualmente
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Doctor Cards -->
-    <div class="doctor-grid" *ngIf="activeTab === 'doctors' && !loading">
-      <div *ngIf="doctors.length === 0" class="no-data">
-        No hay doctores disponibles.
-      </div>
-      
-      <div class="doctor-card" *ngFor="let doctor of doctors" 
-           [class.available]="doctor.isAvailable" 
-           [class.unavailable]="!doctor.isAvailable">
-        <div class="doctor-header">
-          <h3>{{ doctor.doct_Nombre }}</h3>
-          <span class="status-badge" [class.available]="doctor.isAvailable" [class.unavailable]="!doctor.isAvailable">
-            {{ doctor.isAvailable ? 'Disponible' : 'No disponible' }}
-          </span>
-        </div>
-        
-        <div class="doctor-info">
-          <p><strong>ID:</strong> {{ doctor.doct_IdDoctor }}</p>
-          <p><strong>Estatus:</strong> {{ doctor.doct_Estatus }}</p>
-        </div>
-        
-        <div *ngIf="!doctor.isAvailable && doctor.nextAvailability" class="next-availability">
-          <p><strong>Próxima disponibilidad:</strong></p>
-          <p>{{ doctor.nextAvailability.nextDate | date:'EEEE, dd/MM/yyyy':'':'es' }}</p>
-          <p>Horario: {{ doctor.nextAvailability.startTime }} - {{ doctor.nextAvailability.endTime }}</p>
-        </div>
-        
-        <div class="doctor-actions" *ngIf="doctor.isAvailable">
-          <button class="btn btn-primary" (click)="selectDoctor(doctor)">
-            <i class="bi bi-person-plus"></i> Asignar Paciente
-          </button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Assignment Modal -->
-    <div class="assignment-modal" *ngIf="showAssignmentModal">
-      <div class="modal-content">
-        <h3>Asignar Paciente Manualmente</h3>
-        
-        <div class="form-group">
-          <label for="patientName">Paciente</label>
-          <select id="patientName" class="form-control" [(ngModel)]="selectedPatientId">
-            <option value="">-- Selecciona un paciente --</option>
-            <option *ngFor="let patient of patientsWithoutDoctor" [value]="patient.id">
-              {{ patient.nombre }}
-            </option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="doctorName">Doctor</label>
-          <select id="doctorName" class="form-control" [(ngModel)]="selectedDoctorId">
-            <option value="">-- Selecciona un doctor --</option>
-            <option *ngFor="let doctor of availableDoctors" [value]="doctor.doct_IdDoctor">
-              {{ doctor.doct_Nombre }}
-            </option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="appointmentDate">Fecha</label>
-          <input type="date" id="appointmentDate" class="form-control" [(ngModel)]="selectedDate">
-        </div>
-        
-        <div class="modal-actions">
-          <button class="btn btn-cancel" (click)="cancelAssignment()">Cancelar</button>
-          <button class="btn btn-confirm" 
-                  [disabled]="!selectedPatientId || !selectedDoctorId"
-                  (click)="confirmAssignment()">
-            Confirmar Asignación
-          </button>
-        </div>
+
+      <div class="action-buttons" *ngIf="!patient.doctorAsignado">
+        <button class="btn btn-manual-assign" (click)="assignManually(patient)">
+          <i class="bi bi-person"></i> Asignar Manualmente
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Doctor Cards -->
+  <div class="doctor-grid" *ngIf="activeTab === 'doctors' && !loading">
+    <div *ngIf="doctors.length === 0" class="no-data">
+      No hay doctores disponibles.
+    </div>
+
+    <div class="doctor-card" *ngFor="let doctor of doctors" [class.available]="doctor.doct_Estatus === 'A'"
+      [class.unavailable]="doctor.doct_Estatus === 'N'">
+
+      <div class="doctor-header">
+        <h3>{{ doctor.doct_Nombre }}</h3>
+        <span class="status-badge" [class.available]="doctor.doct_Estatus === 'A'"
+          [class.unavailable]="doctor.doct_Estatus === 'N'">
+          {{ doctor.doct_Estatus === 'A' ? 'Disponible' : 'No disponible' }}
+        </span>
+      </div>
+
+      <div class="doctor-info">
+        <p><strong>ID:</strong> {{ doctor.doct_IdDoctor }}</p>
+      </div>
+
+      <div *ngIf="!doctor.isAvailable && doctor.nextAvailability" class="next-availability">
+        <p><strong>Próxima disponibilidad:</strong></p>
+        <p>{{ doctor.nextAvailability.nextDate | date:'EEEE, dd/MM/yyyy':'':'es' }}</p>
+        <p>Horario: {{ doctor.nextAvailability.startTime }} - {{ doctor.nextAvailability.endTime }}</p>
+      </div>
+
+      <div class="doctor-actions" *ngIf="doctor.doct_Estatus === 'A'">
+        <button class="btn btn-primary" (click)="selectDoctor(doctor)">
+          <i class="bi bi-person-plus"></i> Asignar Paciente
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignment Modal -->
+  <div class="assignment-modal" *ngIf="showAssignmentModal">
+    <div class="modal-content">
+      <h3>Asignar Paciente Manualmente</h3>
+
+      <div class="form-group">
+        <label for="patientName">Paciente</label>
+        <select id="patientName" class="form-control" [(ngModel)]="selectedPatientId">
+          <option value="">-- Selecciona un paciente --</option>
+          <option *ngFor="let patient of patientsWithoutDoctor" [value]="patient.id">
+            {{ patient.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="doctorName">Doctor</label>
+        <select id="doctorName" class="form-control" [(ngModel)]="selectedDoctorId">
+          <option value="">-- Selecciona un doctor --</option>
+          <option *ngFor="let doctor of availableDoctors" [value]="doctor.doct_IdDoctor">
+            {{ doctor.doct_Nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="appointmentDate">Fecha</label>
+        <input type="date" id="appointmentDate" class="form-control" [(ngModel)]="selectedDate">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-cancel" (click)="cancelAssignment()">Cancelar</button>
+        <button class="btn btn-confirm" [disabled]="!selectedPatientId || !selectedDoctorId"
+          (click)="confirmAssignment()">
+          Confirmar Asignación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
