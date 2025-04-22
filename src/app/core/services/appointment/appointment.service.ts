@@ -52,6 +52,20 @@ export class AppointmentService {
     return this.apiService.patch<Appointment>(`appointments/${id}/complete`, {});
   }
 
+    /**
+   * Obtiene las citas para una fecha específica
+   */
+    getAppointmentsByDate(date: string): Observable<Appointment[]> {
+      return this.apiService.get<Appointment[]>('appointments', { date });
+    }
+
+      /**
+   * Elimina las citas para un paciente específico
+   */
+  deleteAppointmentByPatientId(patientId: number): Observable<void> {
+    return this.apiService.delete<void>(`appointments/patient/${patientId}`);
+  }
+
   /**
    * Cancela una cita
    */

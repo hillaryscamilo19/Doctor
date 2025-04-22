@@ -13,10 +13,13 @@ export class PatientService {
   /**
    * Obtiene todos los pacientes
    */
-  getPatients(): Observable<Patient[]> {
-    return this.apiService.get<Patient[]>('patients');
+  getPatients(page: number = 1, limit: number = 50): Observable<{data: Patient[]; total: number}> {
+    return this.apiService.get<{ data: Patient[]; total: number }>(`patients?page=${page}&limit=${limit}`);
   }
 
+
+
+  
   /**
    * Obtiene un paciente por su ID
    */
