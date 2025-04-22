@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { CreateAppointmentDto } from '../../../core/models/appointment.model';
 import { Doctor } from '../../../core/models/doctor.model';
@@ -19,7 +18,7 @@ interface PatientWithDoctor extends Patient {
   selector: 'app-home',
   templateUrl: './home.component.html',
   imports: [FormsModule, CommonModule],
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
   activeTab: 'patients' | 'doctors' = 'patients';
@@ -32,22 +31,30 @@ export class HomeComponent implements OnInit {
   selectedPatientId: string = '';
   selectedDoctorId: string = '';
   selectedPatient: PatientWithDoctor | null = null;
+  currentPage = 1;
+  pageSize = 50;
+  totalPatients = 0;
 
   constructor(
     private patientService: PatientService,
     private doctorService: DoctorService,
     private appointmentService: AppointmentService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadData();
   }
 
+  onDateChange(): void {
+    this.checkDoctorsAvailability();
+    this.loadCurrentAppointments();
+  }
   loadData(): void {
     this.loading = true;
     this.error = null;
+  
     forkJoin({
-      patients: this.patientService.getPatients(),
+      patientsResponse: this.patientService.getPatients(this.currentPage, this.pageSize),
       doctors: this.doctorService.getDoctors()
     }).pipe(
       catchError(err => {
@@ -57,35 +64,58 @@ export class HomeComponent implements OnInit {
       finalize(() => {
         this.loading = false;
       })
-    ).subscribe(({ patients, doctors }) => {
+    ).subscribe(({ patientsResponse, doctors }) => {
+      const { data: patients, total } = patientsResponse;
       this.patientsWithDoctors = patients.map(patient => ({
         ...patient,
         sintoma: patient.expe_Observacion
       }));
+      this.totalPatients = total;
       this.doctors = doctors;
-      this.checkDoctorsAvailability();
-      this.loadCurrentAppointments();
     });
   }
 
+  goToPage(page: number): void {
+    if (page < 1 || page > Math.ceil(this.totalPatients / this.pageSize)) return;
+    this.currentPage = page;
+    this.loadData();
+  }
+  
+
   checkDoctorsAvailability(): void {
-    const availabilityRequests = this.doctors.map(doctor =>
-      this.doctorService.checkAvailability(doctor.doct_IdDoctor, this.selectedDate)
+    const availabilityRequests = this.doctors.map((doctor) =>
+      this.doctorService
+        .checkAvailability(doctor.doct_IdDoctor, this.selectedDate)
         .pipe(
           catchError(() => {
-            // Devuelve algo por defecto si falla
-            return [{ available: false, nextAvailability: null }];
+            return of({ available: false, nextAvailability: null });
           })
         )
     );
+
+    forkJoin(availabilityRequests).subscribe((results) => {
+      results.forEach((availability, index) => {
+        this.doctors[index].isAvailable = availability.available;
+      });
+    });
   }
 
   loadCurrentAppointments(): void {
-    this.appointmentService.getAppointmentsByDate(this.selectedDate)
-      .subscribe(appointments => {
-        appointments.forEach(appointment => {
-          const patient = this.patientsWithDoctors.find(p => p.expe_NumeroExpediente === appointment.expe_NumeroExpediente);
-          const doctor = this.doctors.find(d => d.doct_IdDoctor === appointment.expe_NumeroExpediente);
+    this.appointmentService
+      .getAppointmentsByDate(this.selectedDate)
+      .subscribe((appointments) => {
+        this.patientsWithDoctors.forEach(
+          (patient) => (patient.doctorAsignado = undefined)
+        ); // Limpia asignaciones previas
+
+        appointments.forEach((appointment) => {
+          const patient = this.patientsWithDoctors.find(
+            (p) => p.expe_NumeroExpediente === appointment.expe_NumeroExpediente
+          );
+          const doctor = this.doctors.find(
+            (d) => d.doct_IdDoctor === appointment.expe_IdDoctor
+          );
+
           if (patient && doctor) {
             patient.doctorAsignado = doctor;
           }
@@ -97,11 +127,6 @@ export class HomeComponent implements OnInit {
     this.activeTab = tab;
   }
 
- onDateChange(): void {
-  this.checkDoctorsAvailability();   
-  this.loadCurrentAppointments();   
-}
-
   trackByPatient(index: number, patient: PatientWithDoctor) {
     return patient.expe_NumeroExpediente;
   }
@@ -110,30 +135,32 @@ export class HomeComponent implements OnInit {
     return doctor.doct_IdDoctor;
   }
 
-
   get patientsWithoutDoctor(): PatientWithDoctor[] {
-    return this.patientsWithDoctors.filter(patient => !patient.doctorAsignado);
+    return this.patientsWithDoctors.filter(
+      (patient) => !patient.doctorAsignado
+    );
   }
-
 
   get availableDoctors(): Doctor[] {
-    return this.doctors.filter(doctor => doctor.isAvailable);
+    return this.doctors.filter((doctor) => doctor.isAvailable);
   }
-
 
   removeAssignment(patient: PatientWithDoctor): void {
-
-    this.appointmentService.deleteAppointmentByPatientId(patient.expe_NumeroExpediente).subscribe(() => {
-      patient.doctorAsignado = undefined;
-    });
+    this.appointmentService
+      .deleteAppointmentByPatientId(patient.expe_NumeroExpediente)
+      .subscribe(() => {
+        patient.doctorAsignado = undefined;
+      });
   }
-
 
   assignAutomatically(patient: PatientWithDoctor): void {
     const availableDoctor = this.availableDoctors[0];
 
     if (availableDoctor) {
-      this.createAppointment(patient.expe_NumeroExpediente, availableDoctor.doct_IdDoctor);
+      this.createAppointment(
+        patient.expe_NumeroExpediente,
+        availableDoctor.doct_IdDoctor
+      );
     } else {
       this.error = 'No hay doctores disponibles en este momento.';
     }
@@ -146,14 +173,11 @@ export class HomeComponent implements OnInit {
     this.showAssignmentModal = true;
   }
 
-
   selectDoctor(doctor: Doctor): void {
-
     this.selectedDoctorId = doctor.doct_IdDoctor;
     this.selectedPatientId = '';
     this.showAssignmentModal = true;
   }
-
 
   cancelAssignment(): void {
     this.showAssignmentModal = false;
@@ -161,7 +185,6 @@ export class HomeComponent implements OnInit {
     this.selectedDoctorId = '';
     this.selectedPatient = null;
   }
-
 
   confirmAssignment(): void {
     const patientId = parseInt(this.selectedPatientId, 10);
@@ -171,12 +194,9 @@ export class HomeComponent implements OnInit {
     this.showAssignmentModal = false;
   }
 
-
   private createAppointment(patientId: number, doctorId: string): void {
-
-    const doctor = this.doctors.find(d => d.doct_IdDoctor === doctorId);
+    const doctor = this.doctors.find((d) => d.doct_IdDoctor === doctorId);
     if (!doctor) return;
-
 
     const date = new Date(this.selectedDate);
     const dayOfWeek = date.getDay();
@@ -220,18 +240,20 @@ export class HomeComponent implements OnInit {
       horaInicio: startTime,
       horaFin: endTime,
       doctorId: doctorId,
-      pacienteId: patientId
+      pacienteId: patientId,
     };
     this.appointmentService.createAppointment(appointmentData).subscribe(
       () => {
-        const patient = this.patientsWithDoctors.find(p => p.expe_NumeroExpediente === patientId);
-        const doctor = this.doctors.find(d => d.doct_IdDoctor === doctorId);
+        const patient = this.patientsWithDoctors.find(
+          (p) => p.expe_NumeroExpediente === patientId
+        );
+        const doctor = this.doctors.find((d) => d.doct_IdDoctor === doctorId);
 
         if (patient && doctor) {
           patient.doctorAsignado = doctor;
         }
       },
-      error => {
+      (error) => {
         this.error = 'Error al crear la cita. Por favor, inténtelo de nuevo.';
       }
     );
