@@ -47,10 +47,8 @@
     </div>
 
     <div class="patient-card" *ngFor="let patient of patientsWithDoctors">
-      <h3>{{ patient.expe_NombreMadre }}</h3>
+      <h3>{{ patient.expe_Nombres }}</h3>
       <h3>{{ patient.expe_Apellidos }}</h3>
-      <h3>{{ patient.expe_Cedula }}</h3>
-      <h3>{{ patient.expe_Email }}</h3>
       <p class="symptom">{{ patient.sintoma }}</p>
 
       <div class="doctor-assignment" *ngIf="patient.doctorAsignado">
@@ -156,11 +154,10 @@
           [(ngModel)]="selectedPatientId"
         >
           <option value="">-- Selecciona un paciente --</option>
-          <option
-            *ngFor="let patient of patientsWithoutDoctor"
+          <option  *ngFor="let patient of patientsWithDoctors"
             [value]="patient.expe_NumeroExpediente"
           >
-            {{ patient.expe_Apellidos }}
+            {{ patient.expe_Nombres }} {{ patient.expe_Apellidos }}
           </option>
         </select>
       </div>

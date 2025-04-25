@@ -17,9 +17,6 @@ export class PatientService {
     return this.apiService.get<{ data: Patient[]; total: number }>(`patients?page=${page}&limit=${limit}`);
   }
 
-
-
-  
   /**
    * Obtiene un paciente por su ID
    */
