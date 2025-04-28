@@ -42,7 +42,7 @@ export class AppointmentService {
    * Crea una nueva cita
    */
   createAppointment(appointment: CreateAppointmentDto): Observable<Appointment> {
-    return this.apiService.post<Appointment>('appointments', appointment);
+    return this.apiService.post<Appointment>('appointments/create', appointment);
   }
 
   /**

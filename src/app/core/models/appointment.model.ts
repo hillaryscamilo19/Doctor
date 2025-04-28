@@ -35,12 +35,11 @@ export interface Appointment {
 }
 
 export interface CreateAppointmentDto {
-  cita_IdDoctor: string;
-  cita_Fecha: Date;
-  cita_hora: Date;
-  cita_NumeroExpediente: number;
-  cita_Nombre: string;
-  cita_FechaEstatusConf: Date;
+  lisp_IdDoctor: string;
+  lisp_Fecha: Date;
+  lisp_Nombre: string;
+  lisP_Apellido: string;
+  lisp_NumeroExpediente: number
 }
 
 export interface CreateAppointmentDto2 {

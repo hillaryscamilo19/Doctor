@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { forkJoin, of } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
-import { Appointment, CreateAppointmentDto } from '../../../core/models/appointment.model';
+import {
+  Appointment,
+  CreateAppointmentDto,
+} from '../../../core/models/appointment.model';
 import { Doctor } from '../../../core/models/doctor.model';
 import { Patient } from '../../../core/models/patients.model';
 import { AppointmentService } from '../../../core/services/appointment/appointment.service';
@@ -28,7 +31,7 @@ export class HomeComponent implements OnInit {
   patientsWithDoctors: PatientWithDoctor[] = [];
   allPatients: PatientWithDoctor[] = [];
   doctors: Doctor[] = [];
-  patients: Appointment[] = []
+  patients: Appointment[] = [];
   selectedDate: string = new Date().toISOString().split('T')[0];
   selectedPatientId: string = '';
   selectedDoctorId: string = '';
@@ -45,9 +48,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadData();
-    console.log("Pacientes disponibles:", this.patients);
-    console.log("Doctores Disponible:", this.selectedPatient);
-    
   }
 
   onDateChange(): void {
@@ -58,7 +58,7 @@ export class HomeComponent implements OnInit {
   loadData(): void {
     this.loading = true;
     this.error = null;
-    this.doctorService.getDoctors().subscribe(data => {
+    this.doctorService.getDoctors().subscribe((data) => {
       this.doctors = data;
     });
     forkJoin({
@@ -91,6 +91,9 @@ export class HomeComponent implements OnInit {
     this.loadData();
   }
 
+
+  
+
   checkDoctorsAvailability(): void {
     const availabilityRequests = this.doctors.map((doctor) =>
       this.doctorService
@@ -121,7 +124,7 @@ export class HomeComponent implements OnInit {
             (p) => p.expe_NumeroExpediente === appointment.expe_NumeroExpediente
           );
           const doctor = this.doctors.find(
-            (d) => d.doct_IdDoctor === appointment.expe_NumeroExpediente
+            (d) => d.doct_IdDoctor === appointment.expe_IdDoctor
           );
           if (patient && doctor) {
             patient.doctorAsignado = doctor;
@@ -182,10 +185,9 @@ export class HomeComponent implements OnInit {
 
   selectDoctor(doctor: Doctor): void {
     this.selectedDoctorId = doctor.doct_IdDoctor;
-    this.selectedPatientId = '';
     this.showAssignmentModal = true;
   }
-
+  
   cancelAssignment(): void {
     this.showAssignmentModal = false;
     this.selectedPatientId = '';
@@ -197,20 +199,20 @@ export class HomeComponent implements OnInit {
     const patientId = parseInt(this.selectedPatientId, 10);
     const doctorId = this.selectedDoctorId;
 
-    this.createAppointment(patientId, doctorId );
+    this.createAppointment(patientId, doctorId);
     this.showAssignmentModal = false;
   }
 
   private createAppointment(patientId: number, doctorId: string): void {
     const doctor = this.doctors.find((d) => d.doct_IdDoctor === doctorId);
     if (!doctor) return;
-  
+
     const date = new Date(this.selectedDate);
     const dayOfWeek = date.getDay();
-  
+
     let startTime = '';
     let endTime = '';
-  
+
     switch (dayOfWeek) {
       case 0:
         startTime = doctor.doct_HorIniConDom || '09:00';
@@ -234,29 +236,30 @@ export class HomeComponent implements OnInit {
         break;
       case 5:
         startTime = doctor.doct_HorIniConVie || '09:00';
-        endTime = doctor.horFinConVie || '17:00';
+        endTime = doctor.doct_HorFinConSab || '17:00';
         break;
       case 6:
         startTime = doctor.doct_HorIniConSab || '09:00';
         endTime = doctor.doct_HorFinConSab || '13:00';
         break;
     }
-  
+
     const patient = this.patientsWithDoctors.find(
       (p) => p.expe_NumeroExpediente === patientId
     );
-  
-    const cita_Nombre = patient ? `${patient.expe_Nombres} ${patient.expe_Apellidos}` : '';
-  
+
+    const cita_Nombre = patient
+      ? `${patient.expe_Nombres} ${patient.expe_Apellidos}`
+      : '';
+
     const appointmentData: CreateAppointmentDto = {
-      cita_IdDoctor: doctorId,
-      cita_Fecha: date,
-      cita_hora: date,
-      cita_NumeroExpediente: patientId,
-      cita_Nombre: cita_Nombre,
-      cita_FechaEstatusConf: date
+      lisp_IdDoctor: doctorId,
+      lisp_Fecha: date,
+      lisp_Nombre: cita_Nombre,
+      lisP_Apellido: cita_Nombre,
+      lisp_NumeroExpediente: patientId,
     };
-  
+
     this.appointmentService.createAppointment(appointmentData).subscribe(
       () => {
         if (patient && doctor) {
@@ -268,5 +271,4 @@ export class HomeComponent implements OnInit {
       }
     );
   }
-  
 }
