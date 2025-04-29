@@ -39,7 +39,9 @@ export interface CreateAppointmentDto {
   lisp_Fecha: Date;
   lisp_Nombre: string;
   lisP_Apellido: string;
-  lisp_NumeroExpediente: number
+  lisp_NumeroExpediente: number;
+  lisp_Secuencia: number;
+  NumLista: number;
 }
 
 export interface CreateAppointmentDto2 {

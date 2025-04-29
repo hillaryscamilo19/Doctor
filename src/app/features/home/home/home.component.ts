@@ -194,15 +194,32 @@ export class HomeComponent implements OnInit {
     this.selectedDoctorId = '';
     this.selectedPatient = null;
   }
-
-  confirmAssignment(): void {
-    const patientId = parseInt(this.selectedPatientId, 10);
-    const doctorId = this.selectedDoctorId;
-
-    this.createAppointment(patientId, doctorId);
-    this.showAssignmentModal = false;
+  confirmAssignment() {
+    if (!this.selectedPatientId || !this.selectedDoctorId || !this.selectedDate) {
+      return;
+    }
+  
+    const appointment: CreateAppointmentDto = {
+      lisp_NumeroExpediente: this.selectedPatientId,
+      lisp_IdDoctor: this.selectedDoctorId,
+      lisp_Fecha: this.selectedDate,
+      lisp_Nombre: '',
+      lisP_Apellido: '',
+      lisp_Secuencia: 0,
+      NumLista: 0
+    };
+  
+    this.appointmentService.createAppointment(appointment).subscribe({
+      next: (res) => {
+        this.showAssignmentModal = false;
+        this.loadData(); // Método que recarga pacientes y doctores
+      },
+      error: (err) => {
+        console.error('Error al asignar cita:', err);
+        this.error = 'No se pudo crear la cita. Intenta nuevamente.';
+      }
+    });
   }
-
   private createAppointment(patientId: number, doctorId: string): void {
     const doctor = this.doctors.find((d) => d.doct_IdDoctor === doctorId);
     if (!doctor) return;
@@ -258,6 +275,8 @@ export class HomeComponent implements OnInit {
       lisp_Nombre: cita_Nombre,
       lisP_Apellido: cita_Nombre,
       lisp_NumeroExpediente: patientId,
+      lisp_Secuencia: ,
+      NumLista: 
     };
 
     this.appointmentService.createAppointment(appointmentData).subscribe(
