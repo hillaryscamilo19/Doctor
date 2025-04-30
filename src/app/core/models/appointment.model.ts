@@ -36,10 +36,10 @@ export interface Appointment {
 
 export interface CreateAppointmentDto {
   lisp_IdDoctor: string;
-  lisp_Fecha: Date;
+  lisp_Fecha: string;
   lisp_Nombre: string;
   lisP_Apellido: string;
-  lisp_NumeroExpediente: number;
+  lisp_NumeroExpediente: string;
   lisp_Secuencia: number;
   NumLista: number;
 }

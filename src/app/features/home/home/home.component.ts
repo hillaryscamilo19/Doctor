@@ -269,25 +269,6 @@ export class HomeComponent implements OnInit {
       ? `${patient.expe_Nombres} ${patient.expe_Apellidos}`
       : '';
 
-    const appointmentData: CreateAppointmentDto = {
-      lisp_IdDoctor: doctorId,
-      lisp_Fecha: date,
-      lisp_Nombre: cita_Nombre,
-      lisP_Apellido: cita_Nombre,
-      lisp_NumeroExpediente: patientId,
-      lisp_Secuencia: ,
-      NumLista: 
-    };
-
-    this.appointmentService.createAppointment(appointmentData).subscribe(
-      () => {
-        if (patient && doctor) {
-          patient.doctorAsignado = doctor;
-        }
-      },
-      (error) => {
-        this.error = 'Error al crear la cita. Por favor, inténtelo de nuevo.';
-      }
-    );
+ 
   }
 }
