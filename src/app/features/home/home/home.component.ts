@@ -91,9 +91,6 @@ export class HomeComponent implements OnInit {
     this.loadData();
   }
 
-
-  
-
   checkDoctorsAvailability(): void {
     const availabilityRequests = this.doctors.map((doctor) =>
       this.doctorService
@@ -187,42 +184,53 @@ export class HomeComponent implements OnInit {
     this.selectedDoctorId = doctor.doct_IdDoctor;
     this.showAssignmentModal = true;
   }
-  
+
   cancelAssignment(): void {
     this.showAssignmentModal = false;
     this.selectedPatientId = '';
     this.selectedDoctorId = '';
     this.selectedPatient = null;
   }
-  confirmAssignment() {
-    if (!this.selectedPatientId || !this.selectedDoctorId || !this.selectedDate) {
+
+  confirmAssignment(patient: PatientWithDoctor) {
+    if (!patient) {
+      console.error('Paciente no encontrado o no asignado');
       return;
     }
-  
+
+    if (
+      !this.selectedPatientId ||
+      !this.selectedDoctorId ||
+      !this.selectedDate
+    ) {
+      return;
+    }
+    console.log('Fecha seleccionada:', this.selectedDate);
     const appointment: CreateAppointmentDto = {
-      lisp_NumeroExpediente: this.selectedPatientId,
-      lisp_IdDoctor: this.selectedDoctorId,
-      lisp_Fecha: this.selectedDate,
-      lisp_Nombre: '',
-      lisP_Apellido: '',
-      lisp_Secuencia: 0,
-      NumLista: 0
+      lisp_NumeroExpediente: String(this.selectedPatientId),
+      lisp_IdDoctor: Number(this.selectedDoctorId),
+      lisp_Nombre: patient.expe_Nombres ?? '',
+      lisP_Apellido: patient.expe_Apellidos ?? '',
+      lisp_Fecha: new String(this.selectedDate),
     };
-  
+
     this.appointmentService.createAppointment(appointment).subscribe({
       next: (res) => {
         this.showAssignmentModal = false;
-        this.loadData(); // Método que recarga pacientes y doctores
+        this.loadData();
       },
       error: (err) => {
         console.error('Error al asignar cita:', err);
         this.error = 'No se pudo crear la cita. Intenta nuevamente.';
-      }
+      },
     });
   }
   private createAppointment(patientId: number, doctorId: string): void {
     const doctor = this.doctors.find((d) => d.doct_IdDoctor === doctorId);
-    if (!doctor) return;
+    const patient = this.patientsWithDoctors.find(
+      (p) => p.expe_NumeroExpediente === patientId
+    );
+    if (!doctor || !patient) return;
 
     const date = new Date(this.selectedDate);
     const dayOfWeek = date.getDay();
@@ -253,7 +261,7 @@ export class HomeComponent implements OnInit {
         break;
       case 5:
         startTime = doctor.doct_HorIniConVie || '09:00';
-        endTime = doctor.doct_HorFinConSab || '17:00';
+        endTime = doctor.doct_HorFinConVie || '17:00';
         break;
       case 6:
         startTime = doctor.doct_HorIniConSab || '09:00';
@@ -261,14 +269,23 @@ export class HomeComponent implements OnInit {
         break;
     }
 
-    const patient = this.patientsWithDoctors.find(
-      (p) => p.expe_NumeroExpediente === patientId
-    );
+    const appointment: CreateAppointmentDto = {
+      lisp_NumeroExpediente: String(patient.expe_NumeroExpediente),
+      lisp_IdDoctor: Number(doctor.doct_IdDoctor),
+      lisp_Fecha: new Date(this.selectedDate).toISOString(),
+      lisp_Nombre: String(patient.expe_Nombres),
+      lisP_Apellido: String(patient.expe_Apellidos),
+    };
 
-    const cita_Nombre = patient
-      ? `${patient.expe_Nombres} ${patient.expe_Apellidos}`
-      : '';
-
- 
+    this.appointmentService.createAppointment(appointment).subscribe({
+      next: () => {
+        patient.doctorAsignado = doctor;
+        this.loadCurrentAppointments();
+      },
+      error: (err) => {
+        console.error('Error al crear cita automáticamente:', err);
+        this.error = 'No se pudo asignar la cita automáticamente.';
+      },
+    });
   }
 }
