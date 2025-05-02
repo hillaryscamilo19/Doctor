@@ -23,6 +23,7 @@ export interface Doctor {
         doct_HorFinConMar?: string
         doct_HorFinConMie?: string
         doct_HorFinConJue?: string
+        doct_HorFinConVie?: string
         horFinConVie?: string
         doct_HorFinConSab?: string
       

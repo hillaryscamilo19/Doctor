@@ -38,7 +38,7 @@ export class DoctorListComponent {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (data) => {
-          this.doctors = data;
+  
           this.checkAvailability();
         },
         error: (err) => {
